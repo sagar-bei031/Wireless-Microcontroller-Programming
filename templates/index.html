@@ -62,6 +62,19 @@
 
 <!-- Content Section (hidden by default until password is entered) -->
 <div id="content">
+    
+     <h3>Search for Connected Devices</h3>
+   <button id="search-btn">Search</button>
+
+    <!-- Dropdown to display devices -->
+    <label for="device-select">Select a Device:</label>
+    <select id="device-select">
+        <option value="">--Select a Device--</option>
+    </select>
+
+    <br><br>
+
+
     <h2>Upload a File</h2>
 
     <!-- File Upload Form -->
@@ -76,6 +89,7 @@
 
     <h3>Terminal Output:</h3>
     <pre id="terminal"></pre>
+
 </div>
 
 <script>
@@ -107,6 +121,34 @@
         var terminal = document.getElementById('terminal');
         terminal.innerHTML += data.output + "\n";
     });
+
+
+    // Search button functionality
+    document.getElementById('search-btn').addEventListener('click', function() {
+        fetch('/search')
+            .then(response => response.json())
+            .then(data => {
+                if (data.error) {
+                    alert(data.error);  // Handle any errors from the server
+                    return;
+                }
+
+                var deviceSelect = document.getElementById('device-select');
+                deviceSelect.innerHTML = '<option value="">--Select a Device--</option>'; // Reset the dropdown
+
+                // Loop through the devices and add them as options
+                data.devices.forEach(device => {
+                    var option = document.createElement('option');
+                    option.value = device.serial;  // Set the value to the device serial number
+                    option.textContent = device.dev_type + ' (' + device.serial + ')'; // Display the dev-type and serial
+                    deviceSelect.appendChild(option);
+                });
+            })
+            .catch(error => {
+                alert('Error: ' + error);  // Display any fetch errors
+            });
+    }); 
+
 
 </script>
 
