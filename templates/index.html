@@ -3,63 +3,113 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>File Upload</title>
+    <title>Protected File Upload</title>
     <script src="/static/js/socket.io.min.js"></script>
+    <style>
+        /* The Modal (background) */
+        .modal {
+            display: block; /* Make modal visible by default */
+            position: fixed;
+            z-index: 1;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.5); /* Black with opacity */
+        }
+
+        /* Modal Content */
+        .modal-content {
+            background-color: white;
+            margin: 15% auto; /* 15% from the top and centered */
+            padding: 20px;
+            border: 1px solid #888;
+            width: 30%;
+            border-radius: 10px;
+        }
+
+        /* Upload button styling */
+        .upload-btn {
+            background-color: #008CBA;
+            color: white;
+            padding: 10px 20px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+
+        /* Hidden content */
+        #content {
+            display: none;
+        }
+    </style>
 </head>
 <body>
+
+<!-- Password Modal -->
+<div id="passwordModal" class="modal">
+    <!-- Modal content -->
+    <div class="modal-content">
+        <h2>Enter Password to Access</h2>
+        <form id="passwordForm">
+            <label for="password">Password:</label>
+            <input type="password" id="passwordInput" name="password" required>
+            <br><br>
+            <input type="submit" class="upload-btn" value="Submit">
+        </form>
+    </div>
+</div>
+
+<!-- Content Section (hidden by default until password is entered) -->
+<div id="content">
     <h2>Upload a File</h2>
-    {% with messages = get_flashed_messages() %}
-      {% if messages %}
-        <ul>
-          {% for message in messages %}
-            <li>{{ message }}</li>
-          {% endfor %}
-        </ul>
-      {% endif %}
-    {% endwith %}
-    
-    <form method="POST" action="/upload" enctype="multipart/form-data">
-        <label for="password">Enter Password:</label>
-        <input type="password" name="password" id="password" required>
-        <br><br>
-        
+
+    <!-- File Upload Form -->
+    <form method="POST" action="/upload" enctype="multipart/form-data" id="uploadForm">
         <label for="file">Select file:</label>
         <input type="file" name="file" id="file" required>
         <br><br>
-        
-        <input type="submit" value="Upload" style="background-color: #4CAF50; color: white; padding: 10px 20px; border: none; border-radius: 4px; cursor: pointer;">
+
+        <!-- Upload File Button -->
+        <input type="submit" class="upload-btn" value="Upload File" style="background-color: #4CAF50; color: white; padding: 10px 20px; border: none; border-radius: 4px; cursor: pointer;">
     </form>
 
     <h3>Terminal Output:</h3>
     <pre id="terminal"></pre>
+</div>
 
-    <h3>Search for Connected Devices</h3>
-    <button id="search-btn">Search</button>
-    <pre id="device-list"></pre>
+<script>
+    // Simulate a simple password check
+    var correctPassword = "admin"; // Replace with your own logic or server-side check
 
-    <script>
-        var socket = io.connect('http://' + document.domain + ':' + location.port);
-        
-        // Listen for terminal output
-        socket.on('terminal_output', function(data) {
-            var terminal = document.getElementById('terminal');
-            terminal.innerHTML += data.output + "\n";
-        });
+    // Get modal and content elements
+    var modal = document.getElementById("passwordModal");
+    var content = document.getElementById("content");
 
+    // Handle the password form submission
+    document.getElementById("passwordForm").onsubmit = function(e) {
+        e.preventDefault();
+        var password = document.getElementById("passwordInput").value;
 
-        // Search button functionality
-        document.getElementById('search-btn').addEventListener('click', function() {
-            fetch('/search')
-                .then(response => response.json())
-                .then(data => {
-                    var deviceList = document.getElementById('device-list');
-                    deviceList.innerHTML = data.devices.join("\n");  // Display devices
-                })
-                .catch(error => {
-                    document.getElementById('device-list').innerHTML = 'Error: ' + error;
-                });
-        });
-    </script>
+        // Check if the entered password is correct
+        if (password === correctPassword) {
+            // Hide the modal and show the content
+            modal.style.display = "none";
+            content.style.display = "block";
+        } else {
+            alert("Incorrect password. Please try again.");
+        }
+    };
+
+    // Socket.IO for terminal output (if needed)
+    var socket = io.connect('http://' + document.domain + ':' + location.port);
+    socket.on('terminal_output', function(data) {
+        var terminal = document.getElementById('terminal');
+        terminal.innerHTML += data.output + "\n";
+    });
+
+</script>
+
 </body>
 </html>
 
