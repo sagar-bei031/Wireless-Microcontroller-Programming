@@ -27,11 +27,15 @@
         <input type="file" name="file" id="file" required>
         <br><br>
         
-        <input type="submit" value="Upload">
+        <input type="submit" value="Upload" style="background-color: #4CAF50; color: white; padding: 10px 20px; border: none; border-radius: 4px; cursor: pointer;">
     </form>
 
     <h3>Terminal Output:</h3>
     <pre id="terminal"></pre>
+
+    <h3>Search for Connected Devices</h3>
+    <button id="search-btn">Search</button>
+    <pre id="device-list"></pre>
 
     <script>
         var socket = io.connect('http://' + document.domain + ':' + location.port);
@@ -40,6 +44,20 @@
         socket.on('terminal_output', function(data) {
             var terminal = document.getElementById('terminal');
             terminal.innerHTML += data.output + "\n";
+        });
+
+
+        // Search button functionality
+        document.getElementById('search-btn').addEventListener('click', function() {
+            fetch('/search')
+                .then(response => response.json())
+                .then(data => {
+                    var deviceList = document.getElementById('device-list');
+                    deviceList.innerHTML = data.devices.join("\n");  // Display devices
+                })
+                .catch(error => {
+                    document.getElementById('device-list').innerHTML = 'Error: ' + error;
+                });
         });
     </script>
 </body>
