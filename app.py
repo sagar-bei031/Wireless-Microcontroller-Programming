@@ -102,6 +102,8 @@ def flash_microcontroller(file_path):
     except Exception as e:
         socketio.emit('terminal_output', {'output': f'An error occurred: {str(e)}'})
         print(f"An error occurred: {str(e)}")
+
+
 if __name__ == '__main__':
     #app.run(host='0.0.0.0', port=5000, debug=True)
     socketio.run(app, host='0.0.0.0', port=5000, debug=True)
