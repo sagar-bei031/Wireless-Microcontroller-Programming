@@ -4,6 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>File Upload</title>
+    <script src="/static/js/socket.io.min.js"></script>
 </head>
 <body>
     <h2>Upload a File</h2>
@@ -28,6 +29,19 @@
         
         <input type="submit" value="Upload">
     </form>
+
+    <h3>Terminal Output:</h3>
+    <pre id="terminal"></pre>
+
+    <script>
+        var socket = io.connect('http://' + document.domain + ':' + location.port);
+        
+        // Listen for terminal output
+        socket.on('terminal_output', function(data) {
+            var terminal = document.getElementById('terminal');
+            terminal.innerHTML += data.output + "\n";
+        });
+    </script>
 </body>
 </html>
 
