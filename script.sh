@@ -1,18 +1,33 @@
 #!/data/data/com.termux/files/usr/bin/bash
 
-if [ -z "$1" ]; then
-	echo "Erro no file provided"
-	exit 1
+# Check if the correct number of arguments is provided
+if [ "$#" -ne 2 ]; then
+    echo "Usage: $0 <file_path> <serial_number>"
+    exit 1
 fi
 
+# Assign arguments to variables
 FILE=$1
+SERIAL=$2
 
-#tsu
-echo "Flashing microcontroller with $FILE..."
+# Validate file existence
+if [ ! -f "$FILE" ]; then
+    echo "Error: File '$FILE' not found!"
+    exit 1
+fi
 
-#cat $FILE
-#mv $FILE files/renamed
+# Optionally validate the serial number if needed (e.g., check format)
+# For example, checking if serial number is not empty
+if [ -z "$SERIAL" ]; then
+    echo "Error: Serial number must be provided!"
+    exit 1
+fi
 
-#cd /data/data/com.termux/files/home/flash
-/data/data/com.termux/files/home/sagar/bin/st-flash --reset write $FILE 0x8000000
-#exit
+# Print status
+echo "Flashing microcontroller with file $FILE using serial number $SERIAL..."
+
+# Run the flash command
+/data/data/com.termux/files/home/sagar/bin/st-flash --reset --serial $SERIAL write $FILE 0x8000000
+
+# Optional: You can add further actions or messages here
+
