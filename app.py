@@ -1,7 +1,8 @@
-from flask import Flask, render_template, request, redirect, url_for, flash
+from flask import Flask, jsonify, render_template, request, redirect, url_for, flash
 from flask_socketio import SocketIO, emit
 import os
 import subprocess
+import csv
 
 app = Flask(__name__)
 app.secret_key = os.urandom(24)  # Used to handle flash messages
@@ -102,6 +103,37 @@ def flash_microcontroller(file_path):
     except Exception as e:
         socketio.emit('terminal_output', {'output': f'An error occurred: {str(e)}'})
         print(f"An error occurred: {str(e)}")
+
+
+@app.route('/search', methods=['GET'])
+def search():
+    """Endpoint to search for programmers, parse the CSV, and return JSON data."""
+
+    # Run the parse_stinfo.sh script
+    try:
+        subprocess.run([PARSE_SCRIPT_PATH], check=True)
+    except subprocess.CalledProcessError as e:
+        return jsonify({"error": "Failed to run the script", "details": str(e)}), 500
+
+    # After the script finishes, read the CSV file
+    programmers = []
+
+    try:
+        with open(CSV_FILE_PATH, mode='r') as csv_file:
+            csv_reader = csv.DictReader(csv_file)
+            for row in csv_reader:
+                programmers.append({
+                    'dev-type': row['dev-type'],
+                    'serial': row['serial']
+                })
+    except FileNotFoundError:
+        return jsonify({"error": "CSV file not found"}), 500
+    except Exception as e:
+        return jsonify({"error": "Error reading the CSV file", "details": str(e)}), 500
+
+    # Return the list of programmers as JSON
+    return jsonify({"programmers": programmers})
+
 
 
 if __name__ == '__main__':

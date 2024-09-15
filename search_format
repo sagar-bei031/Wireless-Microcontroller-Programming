@@ -1,0 +1,10 @@
+Found 1 stlink programmers
+1.
+  version:    V2J40S27
+  serial:     066DFF565588494867235039
+  flash:      1048576 (pagesize: 16384)
+  sram:       196608
+  chipid:     0x413
+  dev-type:   STM32F4x5_F4x7
+2.
+.......
