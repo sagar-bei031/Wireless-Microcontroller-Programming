@@ -8,9 +8,9 @@ body {
     padding: 0;
     display: flex;
     justify-content: center;
-    align-items: center;
-    height: 100vh;
-    overflow: hidden; /* Prevents scrollbars */
+    align-items: flex-start; /* Align content to top */
+    min-height: 100vh;
+    overflow-y: auto; /* Allows scrolling */
 }
 
 /* Content container */
@@ -19,7 +19,7 @@ body {
     box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.1);
     padding: 30px;
     border-radius: 10px;
-    max-width: 700px;
+    max-width: 900px; /* Increased from 700px to 900px */
     width: 100%;
     box-sizing: border-box;
     margin: 20px auto;
@@ -134,7 +134,39 @@ select:focus {
 .upload-btn:hover:enabled {
     background-color: #218838;
 }
+/* Terminal container styling */
+.terminal-container {
+    border: 1px solid #333; /* Border around the entire container */
+    border-radius: 8px;
+    padding: 15px;
+    background-color: #f7f7f7; /* Light background for the container */
+    box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.1); /* Add some shadow for depth */
+    margin-top: 20px; /* Adds space between this section and other content */
+}
 
+
+/* Terminal header and button styling */
+.terminal-header {
+    display: flex;
+    justify-content: space-between; /* Aligns the header and button on the same line */
+    align-items: center;
+    margin-bottom: 10px;
+}
+
+/* Styling for the clear screen button */
+.clear-btn {
+    background-color: #f44336; /* Red color */
+    color: white;
+    padding: 8px 16px;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+}
+
+.clear-btn:hover {
+    background-color: #d32f2f; /* Darker red on hover */
+}
 /* Terminal output styling */
 #terminal {
     background-color: #1e1e1e;
@@ -143,9 +175,11 @@ select:focus {
     padding: 15px;
     border-radius: 8px;
     margin-top: 20px;
-    height: 200px;
+    height: 300px; /* Increased from 200px to 300px */
     overflow-y: auto;
     border: 1px solid #333;
+    width: 100%; /* Ensure the terminal takes full width */
+    box-sizing: border-box; /* Ensures padding does not exceed content width */
 }
 
 /* Scrollbar styling */

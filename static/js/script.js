@@ -126,5 +126,11 @@ document.addEventListener("DOMContentLoaded", function() {
         this.value = '';  // Reset file input
         fileNameBox.value = 'No file chosen';  // Display 'No file chosen'
     });
+
+
+    // Clear terminal screen when clear button is clicked
+    document.getElementById('clear-btn').addEventListener('click', function() {
+        document.getElementById('terminal').innerHTML = '';
+    });
 });
 

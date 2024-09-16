@@ -23,7 +23,7 @@
         </div>
     </div>
 
-    <br><br>
+    <br>
     <form id="uploadForm">
 
     <!-- Box for File Upload -->
@@ -38,7 +38,7 @@
         </div>
     </div>
 
-    <br><br>
+    <br>
 
     <!-- Flash Options -->
     <h3>Flash Options</h3>
@@ -51,7 +51,7 @@
         No Reset
     </label>
 
-    <br><br>
+    <br>
 
     <!-- Hidden field to store the selected serial -->
     <input type="hidden" id="serial" name="serial">
@@ -60,8 +60,13 @@
     <input type="submit" class="upload-btn" value="Flash file" disabled>
     </form>
 
+    <div class="terminal-container">
+    <div class="terminal-header">
     <h3>Terminal Output</h3>
-    <pre id="terminal"></pre>
+    <button id="clear-btn" class="clear-btn">Clear Screen</button>
+</div>
+<pre id="terminal"></pre>
+    </div>
 
 </div>
 <script src="/static/js/script.js"></script>
