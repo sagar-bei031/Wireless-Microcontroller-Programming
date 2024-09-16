@@ -1,9 +1,8 @@
 /* General body styling */
 body {
     font-family: 'Roboto', sans-serif;
-    background: url('/static/images/bg_img.jpg') no-repeat center center fixed; 
-    background-size: cover; 
-    /*background-color: #f4f4f9;*/
+    background: url('/static/images/bg4.jpg') no-repeat center center fixed;
+    background-size: cover; /* Ensures the image fills the screen without stretching */
     color: #333;
     margin: 0;
     padding: 0;
@@ -11,11 +10,19 @@ body {
     justify-content: center;
     align-items: center;
     height: 100vh;
+    overflow: hidden; /* Prevents scrollbars */
 }
+
+/* Ensure content inside the body doesn't exceed the viewport */
+html, body {
+    width: 100%;
+    height: 100%;
+}
+
 
 /* Content container */
 #content {
-    background-color: white;
+    background-color: rgba(255, 255, 255, 0.9);
     box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.1);
     padding: 30px;
     border-radius: 10px;
