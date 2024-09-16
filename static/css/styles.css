@@ -1,7 +1,9 @@
 /* General body styling */
 body {
     font-family: 'Roboto', sans-serif;
-    background-color: #f4f4f9;
+    background: url('/static/images/bg_img.jpg') no-repeat center center fixed; 
+    background-size: cover; 
+    /*background-color: #f4f4f9;*/
     color: #333;
     margin: 0;
     padding: 0;
