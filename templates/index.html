@@ -9,50 +9,55 @@
 </head>
 <body>
 
-<!-- Password Modal -->
-<!-- Content Section (hidden by default until password is entered) -->
+<!-- Content Section -->
 <div id="content">
-    
-    <h3>Search for Available Microcontrollers</h3>
-    <button id="search-btn">Search</button>
 
-    <!-- Dropdown to display devices -->
-    <br>
-    <select id="device-select">
-        <option value="">--Select a Microcontroller--</option>
-    </select>
+    <!-- Box for Search Button and Device Select -->
+    <div class="input-box">
+        <h3>Search for Available Microcontrollers</h3>
+        <div class="row-box">
+            <button id="search-btn"><i class="fas fa-search"></i> Search</button>
+            <select id="device-select">
+                <option value="">--Select a Microcontroller--</option>
+            </select>
+        </div>
+    </div>
+
+    <br><br>
+    <form id="uploadForm">
+
+    <!-- Box for File Upload -->
+    <div class="input-box">
+        <h3>Upload Binary File</h3>
+        <div class="row-box">
+            <label for="file" class="btn-file">
+                <i class="fas fa-upload"></i> Browse
+            </label>
+            <input type="file" name="file" id="file" required style="display:none;">
+            <input type="text" id="file-name" readonly placeholder="No file chosen" />
+        </div>
+    </div>
 
     <br><br>
 
-    <h3>Upload Binary File</h3>
+    <!-- Flash Options -->
+    <h3>Flash Options</h3>
+    <label>
+        <input type="radio" name="flashOption" value="reset" checked>
+        Reset
+    </label>
+    <label>
+        <input type="radio" name="flashOption" value="no-reset">
+        No Reset
+    </label>
 
-    <!-- File Upload Form -->
-    <!--form method="POST" action="/upload" enctype="multipart/form-data" id="uploadForm"-->
-    <form id="uploadForm">
-        <input type="file" name="file" id="file" required>
-        
-        <!-- Hidden field to store the selected serial -->
-        <input type="hidden" id="serial" name="serial">
-        
-        <br><br>
+    <br><br>
 
+    <!-- Hidden field to store the selected serial -->
+    <input type="hidden" id="serial" name="serial">
 
-        <!-- Radio button for Reset or No-reset -->
-        <h3>Flash Options</h3>
-        <label>
-            <input type="radio" name="flashOption" value="reset" checked>
-            Reset
-        </label>
-        <label>
-            <input type="radio" name="flashOption" value="no-reset">
-            No Reset
-        </label>
-        
-        <br><br>
-
-
-        <!-- Upload File Button -->
-	    <input type="submit" class="upload-btn" value="Flash file" style="background-color: #666; color: white; padding: 10px 20px; border: none; border-radius: 4px; cursor: not-allowed;" disabled>
+    <!-- Upload File Button -->
+    <input type="submit" class="upload-btn" value="Flash file" disabled>
     </form>
 
     <h3>Terminal Output</h3>

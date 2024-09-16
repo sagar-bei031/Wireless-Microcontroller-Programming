@@ -1,5 +1,3 @@
-// script.js
-
 // Socket.IO for terminal output (if needed)
 var socket = io.connect('http://' + document.domain + ':' + location.port);
 socket.on('terminal_output', function(data) {
@@ -109,6 +107,24 @@ document.addEventListener("DOMContentLoaded", function() {
         .catch(error => {
             alert('Error: ' + error); // Handle any errors during the fetch
         });
+    });
+
+    // Update file name display
+    const fileInput = document.getElementById('file');
+    const fileNameBox = document.getElementById('file-name');
+
+    fileInput.addEventListener('change', function() {
+        if (fileInput.files.length > 0) {
+            fileNameBox.value = fileInput.files[0].name;  // Display the file name
+        } else {
+            fileNameBox.value = 'No file chosen';  // Reset to 'No file chosen'
+        }
+    });
+
+    // Reset file name if browse is canceled
+    fileInput.addEventListener('click', function() {
+        this.value = '';  // Reset file input
+        fileNameBox.value = 'No file chosen';  // Display 'No file chosen'
     });
 });
 

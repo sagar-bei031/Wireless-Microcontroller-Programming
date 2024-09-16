@@ -13,13 +13,6 @@ body {
     overflow: hidden; /* Prevents scrollbars */
 }
 
-/* Ensure content inside the body doesn't exceed the viewport */
-html, body {
-    width: 100%;
-    height: 100%;
-}
-
-
 /* Content container */
 #content {
     background-color: rgba(255, 255, 255, 0.9);
@@ -32,10 +25,26 @@ html, body {
     margin: 20px auto;
 }
 
-/* Spacing and layout */
-h2, h3 {
+/* Heading styles */
+h3 {
     font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
     color: #444;
+    margin-bottom: 20px;
+}
+
+/* Row box for placing search/select and browse/filename in one row */
+.row-box {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 10px;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+    background-color: #f7f7f7;
+}
+
+/* Styles for the input box */
+.input-box {
     margin-bottom: 20px;
 }
 
@@ -47,7 +56,9 @@ h2, h3 {
     border: none;
     border-radius: 5px;
     cursor: pointer;
-    margin-bottom: 20px;
+    margin-right: 10px;
+    display: flex;
+    align-items: center;
     transition: background-color 0.3s ease;
 }
 
@@ -59,7 +70,7 @@ h2, h3 {
 select {
     width: 100%;
     padding: 10px;
-    margin-top: 10px;
+    margin-left: 10px;
     border: 1px solid #ccc;
     border-radius: 4px;
     font-size: 16px;
@@ -71,21 +82,34 @@ select:focus {
     border-color: #0062cc;
 }
 
-/* File input styling */
-input[type="file"] {
-    display: block;
+/* Button for file upload */
+.btn-file {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background-color: #0062cc;
+    color: white;
+    padding: 10px 20px;
+    border-radius: 4px;
+    cursor: pointer;
+    border: none;
+    transition: background-color 0.3s ease;
+}
+
+.btn-file:hover {
+    background-color: #004080;
+}
+
+/* File name display */
+#file-name {
     width: 100%;
-    padding: 8px;
-    margin-top: 10px;
+    padding: 10px;
+    margin-left: 10px;
     border: 1px solid #ccc;
     border-radius: 4px;
     background-color: #fff;
-    box-sizing: border-box;
-    transition: border-color 0.3s ease;
-}
-
-input[type="file"]:focus {
-    border-color: #0062cc;
+    font-size: 16px;
+    color: #333;
 }
 
 /* Upload button styling */
@@ -139,12 +163,12 @@ input[type="file"]:focus {
     #content {
         padding: 20px;
     }
-    
+
     .upload-btn, #search-btn {
         padding: 10px;
     }
 
-    select, input[type="file"] {
+    select, input[type="file"], #file-name {
         font-size: 14px;
     }
 }
