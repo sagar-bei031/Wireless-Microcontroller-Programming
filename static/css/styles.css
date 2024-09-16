@@ -1,0 +1,142 @@
+/* General body styling */
+body {
+    font-family: 'Roboto', sans-serif;
+    background-color: #f4f4f9;
+    color: #333;
+    margin: 0;
+    padding: 0;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+}
+
+/* Content container */
+#content {
+    background-color: white;
+    box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.1);
+    padding: 30px;
+    border-radius: 10px;
+    max-width: 700px;
+    width: 100%;
+    box-sizing: border-box;
+    margin: 20px auto;
+}
+
+/* Spacing and layout */
+h2, h3 {
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    color: #444;
+    margin-bottom: 20px;
+}
+
+/* Search button styling */
+#search-btn {
+    background-color: #0062cc;
+    color: white;
+    padding: 10px 20px;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    margin-bottom: 20px;
+    transition: background-color 0.3s ease;
+}
+
+#search-btn:hover {
+    background-color: #004080;
+}
+
+/* Dropdown styling */
+select {
+    width: 100%;
+    padding: 10px;
+    margin-top: 10px;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    font-size: 16px;
+    box-sizing: border-box;
+    transition: border-color 0.3s ease;
+}
+
+select:focus {
+    border-color: #0062cc;
+}
+
+/* File input styling */
+input[type="file"] {
+    display: block;
+    width: 100%;
+    padding: 8px;
+    margin-top: 10px;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    background-color: #fff;
+    box-sizing: border-box;
+    transition: border-color 0.3s ease;
+}
+
+input[type="file"]:focus {
+    border-color: #0062cc;
+}
+
+/* Upload button styling */
+.upload-btn {
+    width: 100%;
+    background-color: #28a745;
+    color: white;
+    padding: 12px 20px;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    font-size: 16px;
+    margin-top: 20px;
+    transition: background-color 0.3s ease;
+}
+
+.upload-btn:disabled {
+    background-color: #ccc;
+    cursor: not-allowed;
+}
+
+.upload-btn:hover:enabled {
+    background-color: #218838;
+}
+
+/* Terminal output styling */
+#terminal {
+    background-color: #1e1e1e;
+    color: #0aff0a;
+    font-family: 'Courier New', Courier, monospace;
+    padding: 15px;
+    border-radius: 8px;
+    margin-top: 20px;
+    height: 200px;
+    overflow-y: auto;
+    border: 1px solid #333;
+}
+
+/* Scrollbar styling */
+#terminal::-webkit-scrollbar {
+    width: 8px;
+}
+
+#terminal::-webkit-scrollbar-thumb {
+    background-color: #555;
+    border-radius: 4px;
+}
+
+/* Responsive design */
+@media (max-width: 768px) {
+    #content {
+        padding: 20px;
+    }
+    
+    .upload-btn, #search-btn {
+        padding: 10px;
+    }
+
+    select, input[type="file"] {
+        font-size: 14px;
+    }
+}
+

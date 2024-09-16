@@ -25,6 +25,7 @@ def index():
 def upload_file():
     #password = request.form.get('password')
     serial = request.form.get('serial')  # Get the selected serial from the dropdown
+    reset_option = request.form.get('flashOption')
 
     # Check if the password is correct
     """
@@ -48,13 +49,15 @@ def upload_file():
         file.save(file_path)
         flash(f'File successfully uploaded to {file_path} for device {serial}')
 
-        socketio.start_background_task(flash_microcontroller, file_path, serial)
-        return redirect(url_for('index'))
+        socketio.start_background_task(flash_microcontroller, file_path, serial, reset_option)
+        return jsonify({"status": "success"})
+    else:
+        return jsonify({"error": "Flashing failed"}), 400
 
-def flash_microcontroller(file_path, serial):
+def flash_microcontroller(file_path, serial, reset_option):
     """Function to run the shell script and emit real-time output via WebSockets."""
     try:
-        process = subprocess.Popen([FLASH_SCRIPT_PATH, file_path, serial], stdout=subprocess.PIPE, stderr=subprocess.PIPE, text=True)
+        process = subprocess.Popen([FLASH_SCRIPT_PATH, file_path, serial, reset_option], stdout=subprocess.PIPE, stderr=subprocess.PIPE, text=True)
         stdout, stderr = process.communicate()
 
         if stdout:

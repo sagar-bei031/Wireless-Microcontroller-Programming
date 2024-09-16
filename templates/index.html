@@ -5,17 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Wireless Flasher</title>
     <script src="/static/js/socket.io.min.js"></script>
-    <style>
-        .upload-btn {
-            background-color: #008CBA;
-            color: white;
-            padding: 10px 20px;
-            border: none;
-            border-radius: 4px;
-            cursor: pointer;
-        }
-
-    </style>
+    <link rel="stylesheet" href="/static/css/styles.css">
 </head>
 <body>
 
@@ -23,22 +13,22 @@
 <!-- Content Section (hidden by default until password is entered) -->
 <div id="content">
     
-    <h3>Search for Connected Devices</h3>
+    <h3>Search for Available Microcontrollers</h3>
     <button id="search-btn">Search</button>
 
     <!-- Dropdown to display devices -->
-    <label for="device-select">Select a Device:</label>
+    <br>
     <select id="device-select">
-        <option value="">--Select a Device--</option>
+        <option value="">--Select a Microcontroller--</option>
     </select>
 
     <br><br>
 
-    <h2>Upload a File</h2>
+    <h3>Upload Binary File</h3>
 
     <!-- File Upload Form -->
-    <form method="POST" action="/upload" enctype="multipart/form-data" id="uploadForm">
-        <label for="file">Select file:</label>
+    <!--form method="POST" action="/upload" enctype="multipart/form-data" id="uploadForm"-->
+    <form id="uploadForm">
         <input type="file" name="file" id="file" required>
         
         <!-- Hidden field to store the selected serial -->
@@ -46,65 +36,30 @@
         
         <br><br>
 
+
+        <!-- Radio button for Reset or No-reset -->
+        <h3>Flash Options</h3>
+        <label>
+            <input type="radio" name="flashOption" value="reset" checked>
+            Reset
+        </label>
+        <label>
+            <input type="radio" name="flashOption" value="no-reset">
+            No Reset
+        </label>
+        
+        <br><br>
+
+
         <!-- Upload File Button -->
-        <input type="submit" class="upload-btn" value="Upload File" style="background-color: #4CAF50; color: white; padding: 10px 20px; border: none; border-radius: 4px; cursor: pointer;">
+	    <input type="submit" class="upload-btn" value="Flash file" style="background-color: #666; color: white; padding: 10px 20px; border: none; border-radius: 4px; cursor: not-allowed;" disabled>
     </form>
 
-    <h3>Terminal Output:</h3>
+    <h3>Terminal Output</h3>
     <pre id="terminal"></pre>
 
 </div>
-
-<script>
-    // Simulate a simple password check
-
-    // Get modal and content elements
-    var content = document.getElementById("content");
-
-    // Socket.IO for terminal output (if needed)
-    var socket = io.connect('http://' + document.domain + ':' + location.port);
-    socket.on('terminal_output', function(data) {
-        var terminal = document.getElementById('terminal');
-        terminal.innerHTML += data.output + "\n";
-    });
-
-    // Search button functionality
-    document.getElementById('search-btn').addEventListener('click', function() {
-        fetch('/search')
-            .then(response => response.json())
-            .then(data => {
-                if (data.error) {
-                    alert(data.error);  // Handle any errors from the server
-                    return;
-                }
-
-                var deviceSelect = document.getElementById('device-select');
-                deviceSelect.innerHTML = '<option value="">--Select a Device--</option>'; // Reset the dropdown
-
-                // Loop through the devices and add them as options
-                data.programmers.forEach(device => {
-                    var option = document.createElement('option');
-                    option.value = device.serial;  // Set the value to the device serial number
-                    option.textContent = device['dev-type'] + ' (' + device.serial + ')'; // Display the dev-type and serial
-                    deviceSelect.appendChild(option);
-                });
-            })
-            .catch(error => {
-                alert('Error: ' + error);  // Display any fetch errors
-            });
-    });
-
-    // Update hidden input with selected device serial
-    document.getElementById('device-select').addEventListener('change', function() {
-        var serial = this.value;
-        document.getElementById('serial').value = serial;
-
-
-    	// Disable the upload button if no serial is selected
-    	document.querySelector('.upload-btn').disabled = (serial === '');
-    });
-</script>
-
+<script src="/static/js/script.js"></script>
 </body>
 </html>
 
