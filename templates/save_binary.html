@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Save Binary File</title>
+    <title>Database</title>
     <link rel="stylesheet" href="/static/css/save_binary.css">
     <link rel="stylesheet" href="/static/css/header.css">
 </head>
@@ -11,17 +11,32 @@
     <!-- Include header -->
     {% include 'partials/header.html' %}
 
-    <!-- Main content -->
-    <div class="center-box">
-        <h2>Upload Binary File</h2>
-        <form id="binaryForm" enctype="multipart/form-data">
-            <input type="file" id="fileInput" name="binary_file" accept=".bin" required>
-            <br>
-            <button type="submit" id="saveBtn">Save File</button>
-        </form>
-        <div id="statusMessage"></div>
+<div class="center-box">
+    <h2>Upload Binary File</h2>
+    <form id="binaryForm" enctype="multipart/form-data">
+        <input type="file" id="fileInput" name="binary_file" accept=".bin" required>
+        <br>
+        <button type="submit" id="saveBtn">Save File</button>
+    </form>
+    <div id="statusMessage" class="status-message"></div> <!-- Status message area -->
+
+    <!-- Dropdown for saved files -->
+    <div class="dropdown-container">
+        <button class="dropdown-btn" id="fileDropdownBtn">Show Saved Files</button>
+        <select id="fileDropdown" class="file-select">
+            <option value="" disabled selected>Select a saved file</option>
+        </select>
     </div>
 
+    <!-- Action buttons: Save, Delete, Rename -->
+    <div class="action-buttons">
+        <button class="action-btn" id="saveFileBtn">Download</button> <!-- Changed label to "Download" -->
+        <a id="downloadLink" style="display:none;" download></a> <!-- Hidden download link -->
+        <button class="action-btn" id="deleteFileBtn">Delete</button>
+        <button class="action-btn" id="renameFileBtn">Rename</button>
+    </div>
+    <div id="actionStatus" class="action-status"></div> <!-- Action feedback area -->
+</div>
     <script src="/static/js/save_binary.js"></script>
 </body>
 </html>

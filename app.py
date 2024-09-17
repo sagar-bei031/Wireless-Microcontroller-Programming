@@ -135,6 +135,67 @@ def save_binary():
     except Exception as e:
         return jsonify({'error': str(e)}), 500
 
+@app.route('/get_saved_files', methods=['GET'])
+def get_saved_files():
+    """API to return a list of saved .bin files."""
+    try:
+        files = [f for f in os.listdir(SAVE_FOLDER) if f.endswith('.bin')]
+        return jsonify({'files': files})
+    except Exception as e:
+        return jsonify({'error': str(e)}), 500
+
+
+
+@app.route('/delete_file/<filename>', methods=['DELETE'])
+def delete_file(filename):
+    """API to delete a file by its name."""
+    file_path = os.path.join(SAVE_FOLDER, filename)
+    if os.path.exists(file_path):
+        try:
+            os.remove(file_path)
+            return jsonify({'success': True})
+        except Exception as e:
+            return jsonify({'error': str(e)}), 500
+    else:
+        return jsonify({'error': 'File not found'}), 404
+
+
+@app.route('/rename_file/<filename>', methods=['PUT'])
+def rename_file(filename):
+    """API to rename a file."""
+    data = request.json
+    new_name = data.get('new_name')
+
+    if not new_name or not new_name.endswith('.bin'):
+        return jsonify({'error': 'Invalid new file name. Must end with .bin'}), 400
+
+    old_file_path = os.path.join(SAVE_FOLDER, filename)
+    new_file_path = os.path.join(SAVE_FOLDER, new_name)
+
+    if os.path.exists(old_file_path):
+        if not os.path.exists(new_file_path):  # Ensure the new name doesn't exist
+            try:
+                os.rename(old_file_path, new_file_path)
+                return jsonify({'success': True})
+            except Exception as e:
+                return jsonify({'error': str(e)}), 500
+        else:
+            return jsonify({'error': 'A file with the new name already exists'}), 400
+    else:
+        return jsonify({'error': 'File not found'}), 404
+
+
+@app.route('/download_file/<filename>', methods=['GET'])
+def download_file(filename):
+    """Endpoint to serve a file for download."""
+    file_path = os.path.join(SAVE_FOLDER, filename)
+
+    if os.path.exists(file_path):
+        return send_file(file_path, as_attachment=True)
+    else:
+        return jsonify({'error': 'File not found'}), 404
+
+
 if __name__ == '__main__':
     socketio.run(app, host='0.0.0.0', port=5000, debug=True)
 
