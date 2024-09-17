@@ -1,5 +1,5 @@
 from flask import Flask, jsonify, render_template, request, redirect, url_for, flash
-from flask_socketio import SocketIO, emit
+from flask_socketio import SocketIO, emit, join_room
 import os
 import subprocess
 import csv
@@ -20,6 +20,13 @@ if not os.path.exists(UPLOAD_FOLDER):
 @app.route('/')
 def index():
     return render_template('index.html')
+
+@socketio.on('connect')
+def handle_connect():
+    # Assign the user to a room based on their session ID
+    room = request.sid
+    join_room(room)
+    print(f'User connected and joined room: {room}')
 
 @app.route('/upload', methods=['POST'])
 def upload_file():
@@ -49,12 +56,14 @@ def upload_file():
         file.save(file_path)
         flash(f'File successfully uploaded to {file_path} for device {serial}')
 
-        socketio.start_background_task(flash_microcontroller, file_path, serial, reset_option)
+        # Pass the session ID (room) to the background task
+        room = request.sid
+        socketio.start_background_task(flash_microcontroller, file_path, serial, reset_option, room)
         return jsonify({"status": "success"})
     else:
         return jsonify({"error": "Flashing failed"}), 400
 
-def flash_microcontroller(file_path, serial, reset_option):
+def flash_microcontroller(file_path, serial, reset_option, room):
     """Function to run the shell script and emit real-time output via WebSockets."""
     try:
         process = subprocess.Popen([FLASH_SCRIPT_PATH, file_path, serial, reset_option], stdout=subprocess.PIPE, stderr=subprocess.PIPE, text=True)
@@ -70,7 +79,7 @@ def flash_microcontroller(file_path, serial, reset_option):
         else:
             socketio.emit('terminal_output', {'output': 'Flashing failed. Check logs.'})
     except Exception as e:
-        socketio.emit('terminal_output', {'output': f'An error occurred: {str(e)}'})
+        socketio.emit('terminal_output', {'output': f'An error occurred: {str(e)}'}, room=room)
 
 @app.route('/search', methods=['GET'])
 def search():
