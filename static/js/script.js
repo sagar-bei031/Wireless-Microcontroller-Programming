@@ -33,8 +33,7 @@ document.addEventListener("DOMContentLoaded", function() {
                     data.programmers.forEach(device => {
                         var option = document.createElement('option');
                         option.value = device.serial;  // Set the value to the device serial number
-			option.flash = device.flash;
-                        option.textContent = device['dev-type'] + ' (' + device.serial + '|' + device.flash ')'; // Display the dev-type and serial
+                        option.textContent = device['dev-type'] + ' (' + device.serial + ')'; // Display the dev-type and serial
                         deviceSelect.appendChild(option);
                     });
 
