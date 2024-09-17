@@ -1,42 +1,56 @@
-/* Header Styles */
+/* Global Header Styles */
 header {
-    position: fixed; /* Change from sticky to fixed */
+    position: fixed;
     top: 0;
+    left: 0;
+    width: 100%;
     background-color: #333;
     color: #fff;
-    padding: 10px 0;
-    width: 100%; /* Ensure the header spans the full width */
+    padding: 15px 0;
     z-index: 1000;
     box-sizing: border-box;
-    margin: 0;
-    left: 0; /* Ensure the header starts at the left edge */
+    border-bottom: 2px solid #555; /* Ensure same border on every page */
 }
 
 /* Nav tabs container */
 .nav-tabs {
     display: flex;
-    justify-content: center; /* Center the navigation links */
+    justify-content: center;
+    align-items: center;
     padding: 0;
-    box-sizing: border-box;
+    margin: 0;
     width: 100%;
+    max-width: 1200px; /* Limit width for large screens */
+    margin: 0 auto;
+    font-family: 'Roboto', sans-serif; /* Consistent font family */
 }
 
 /* Navbar links */
 .nav-tabs a {
-    color: #fff;
-    padding: 10px 20px;
-    text-decoration: none;
-    font-weight: bold;
-    text-align: center;
     flex-grow: 1;
-}
-
-.nav-tabs a:hover {
-    background-color: #555;
+    color: #fff;
+    padding: 15px 20px;
+    text-decoration: none;
+    text-align: center;
+    font-weight: bold;
+    transition: background-color 0.3s ease;
 }
 
 /* Active link styling */
 .nav-tabs a.active {
     background-color: #444;
+}
+
+/* Hover effect for all links */
+.nav-tabs a:hover {
+    background-color: #555;
+}
+
+/* Responsive Styling */
+@media (max-width: 768px) {
+    .nav-tabs a {
+        padding: 12px 10px;
+        font-size: 14px;
+    }
 }
 

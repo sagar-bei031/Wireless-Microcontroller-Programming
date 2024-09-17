@@ -116,7 +116,7 @@ document.addEventListener("DOMContentLoaded", function() {
             if (data.error) {
                 terminal.innerHTML += "Error: " + data.error + "\n";
             } else {
-                terminal.innerHTML += "File saved successfully!\n";
+                terminal.innerHTML += "File extracting in progress ...\n";
             }
         })
         .catch(error => {

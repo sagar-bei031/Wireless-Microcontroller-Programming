@@ -118,7 +118,7 @@ document.addEventListener("DOMContentLoaded", function() {
             if (data.error) {
                 terminal.innerHTML += "Error: " + data.error + "\n";
             } else {
-                terminal.innerHTML += "File uploaded successfully!\n";
+                terminal.innerHTML += "File flashing in process...\n";
             }
         })
         .catch(error => {

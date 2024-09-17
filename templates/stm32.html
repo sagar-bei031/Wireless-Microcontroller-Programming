@@ -10,66 +10,59 @@
 </head>
 <body>
     {% include 'partials/header.html' %}
-<!-- Content Section -->
-<div id="content">
+    
+    <!-- Content Section -->
+    <div id="content">
+        <div class="input-box">
+            <h3>Search for Available Microcontrollers</h3>
+            <div class="row-box">
+                <button id="search-btn"><i class="fas fa-search"></i> Search</button>
+                <select id="device-select">
+                    <option value="">--Select a Microcontroller--</option>
+                </select>
+            </div>
+        </div>
 
-    <!-- Box for Search Button and Device Select -->
-    <div class="input-box">
-        <h3>Search for Available Microcontrollers</h3>
-        <div class="row-box">
-            <button id="search-btn"><i class="fas fa-search"></i> Search</button>
-            <select id="device-select">
-                <option value="">--Select a Microcontroller--</option>
-            </select>
+        <form id="uploadForm">
+            <div class="input-box">
+                <h3>Select Binary File</h3>
+                <div class="row-box">
+                    <select id="file-select" name="filename">
+                        <option value="">--Select a Saved File--</option>
+                    </select>
+                </div>
+            </div>
+
+            <h3>Flash Options</h3>
+            <label>
+                <input type="radio" name="flashOption" value="reset" checked>
+                Reset
+            </label>
+            <label>
+                <input type="radio" name="flashOption" value="no-reset">
+                No Reset
+            </label>
+
+            <input type="hidden" id="serial" name="serial">
+            <input type="hidden" id="sid" name="sid">
+
+    <!-- Centered Flash Button -->
+    <div class="flash-btn-container">
+        <input type="submit" class="upload-btn flash-btn" value="Flash File" disabled>
+    </div>
+
+        </form>
+
+        <div class="terminal-container">
+            <div class="terminal-header">
+                <h3>Terminal Output</h3>
+                <button id="clear-btn" class="clear-btn">Clear Screen</button>
+            </div>
+            <pre id="terminal"></pre>
         </div>
     </div>
 
-    <br>
-    <form id="uploadForm">
-
-    <!-- Dropdown for Saved Files -->
-    <div class="input-box">
-        <h3>Select Binary File</h3>
-        <div class="row-box">
-            <select id="file-select" name="filename">
-                <option value="">--Select a Saved File--</option>
-            </select>
-        </div>
-    </div>
-
-    <br>
-
-    <!-- Flash Options -->
-    <h3>Flash Options</h3>
-    <label>
-        <input type="radio" name="flashOption" value="reset" checked>
-        Reset
-    </label>
-    <label>
-        <input type="radio" name="flashOption" value="no-reset">
-        No Reset
-    </label>
-
-    <br>
-
-    <!-- Hidden field to store the selected serial -->
-    <input type="hidden" id="serial" name="serial">
-    <input type="hidden" id="sid" name="sid">
-
-    <!-- Upload File Button -->
-    <input type="submit" class="upload-btn" value="Flash file" disabled>
-    </form>
-
-    <div class="terminal-container">
-        <div class="terminal-header">
-            <h3>Terminal Output</h3>
-            <button id="clear-btn" class="clear-btn">Clear Screen</button>
-        </div>
-        <pre id="terminal"></pre>
-    </div>
-
-</div>
-<script src="/static/js/script.js"></script>
+    <script src="/static/js/script.js"></script>
 </body>
 </html>
 

@@ -1,57 +1,47 @@
-#!/bin/bash
+#!/data/data/com.termux/files/usr/bin/bash
 
 # Define the output CSV file
 OUTPUT_FILE="stlink_programmers.csv"
 
-# Initialize an associative array to keep track of dev-type counts
-declare -A dev_type_count
-
 # Write the CSV header
-echo "dev-type,serial,flash" > "$OUTPUT_FILE"
+echo "serial,flash,dev-type" > "$OUTPUT_FILE"
 
-# Variables to hold the current serial, dev-type, and flash size
+# Variables to store device information
 serial=""
-dev_type=""
 flash=""
+dev_type=""
 
 # Run the st-info --probe command and parse the output
-st-info --probe | while IFS= read -r line; do
-    # Check if the line contains a serial
-    if [[ "$line" =~ serial:\ +([A-Fa-f0-9]+) ]]; then
-        serial="${BASH_REMATCH[1]}"
+timeout 10s /data/data/com.termux/files/home/sagar/bin/st-info --probe 2>/dev/null | while IFS= read -r line; do
+    # Extract serial
+    if echo "$line" | grep -q "serial:"; then
+        serial=$(echo "$line" | sed 's/.*serial:\s*//')
     fi
 
-    # Check if the line contains a dev-type (descr)
-    if [[ "$line" =~ descr:\ +([A-Za-z0-9_]+) ]]; then
-        dev_type="${BASH_REMATCH[1]}"
-
-        # Check if this dev-type has already been seen
-        if [[ -n "${dev_type_count[$dev_type]}" ]]; then
-            # Increment the count and append the suffix to the dev-type
-            suffix="${dev_type_count[$dev_type]}"
-            new_dev_type="${dev_type}_$suffix"
-            dev_type_count[$dev_type]=$((suffix + 1))
-        else
-            # First time seeing this dev-type, start the count
-            new_dev_type="$dev_type"
-            dev_type_count[$dev_type]=1
-        fi
+    # Extract flash (only the integer part)
+    if echo "$line" | grep -q "flash:"; then
+        flash=$(echo "$line" | sed 's/.*flash:\s*\([0-9]*\).*/\1/')
     fi
 
-    # Check if the line contains a flash size
-    if [[ "$line" =~ flash:\ +([0-9]+) ]]; then
-        flash="${BASH_REMATCH[1]}"
+    # Extract dev-type
+    if echo "$line" | grep -q "dev-type:"; then
+        dev_type=$(echo "$line" | sed 's/.*dev-type:\s*//')
     fi
 
-    # If we have both serial, dev-type, and flash, write them to the CSV file
-    if [[ -n "$serial" && -n "$dev_type" && -n "$flash" ]]; then
-        echo "$new_dev_type,$serial,$flash" >> "$OUTPUT_FILE"
-        # Reset the serial, dev-type, and flash after writing to CSV
+    # Once all three values are captured, write them to the CSV file
+    if [[ -n "$serial" && -n "$flash" && -n "$dev_type" ]]; then
+        echo "$serial,$flash,$dev_type" >> "$OUTPUT_FILE"
+        # Reset the variables for the next device
         serial=""
-        dev_type=""
         flash=""
+        dev_type=""
     fi
 done
+
+# Check if the timeout caused the command to fail
+if [ $? -eq 124 ]; then
+    echo "st-info command timed out. No data collected." >> "$OUTPUT_FILE"
+fi
 
 echo "Parsing complete. Data saved to $OUTPUT_FILE"
 

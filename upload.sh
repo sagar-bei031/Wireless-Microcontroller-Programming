@@ -29,9 +29,9 @@ echo "Flashing microcontroller with file $FILE using serial number $SERIAL..."
 
 # Conditionally add the --reset flag based on the third argument
 if [ "$RST_OPTION" = "reset" ]; then
-    st-flash --reset --serial $SERIAL write $FILE 0x8000000
+    /data/data/com.termux/files/home/sagar/bin/st-flash --reset --serial $SERIAL write $FILE 0x8000000
 elif [ "$RST_OPTION" = "no-reset" ]; then
-    st-flash --serial $SERIAL write $FILE 0x8000000
+    /data/data/com.termux/files/home/sagar/bin/st-flash --serial $SERIAL write $FILE 0x8000000
 else
     echo "Error: Invalid reset option. Use 'reset' or 'no-reset'."
     exit 1
