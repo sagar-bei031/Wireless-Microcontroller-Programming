@@ -1,4 +1,4 @@
-// Socket.IO for terminal output (if needed)
+// Socket.IO for terminal output
 var socket = io.connect('http://' + document.domain + ':' + location.port);
 
 // On WebSocket connect, set the sid in the hidden form field
@@ -11,12 +11,12 @@ socket.on('terminal_output', function(data) {
     terminal.innerHTML += data.output + "\n";
 });
 
-
 document.addEventListener("DOMContentLoaded", function() {
     var deviceSelect = document.getElementById('device-select');
-    var fileNameInput = document.getElementById('file-name');
+    var fileNameInput = document.getElementById('filename');
     var saveButton = document.getElementById('save-btn');
     var terminal = document.getElementById('terminal');
+
     // Initial state of the button should be disabled
     checkDeviceSelection();
 
@@ -38,14 +38,12 @@ document.addEventListener("DOMContentLoaded", function() {
                     data.programmers.forEach(device => {
                         var option = document.createElement('option');
                         option.value = device.serial;  // Set the value to the device serial number
-			option.flash = device.flash;
-                        option.textContent = device['dev-type'] + ' (' + device.serial + '|' + device.flash ')'; // Display the dev-type and serial
+                        option.dataset.flash = device.flash;  // Store flash as data attribute
+                        option.textContent = `${device['dev-type']} (${device.serial}|${device.flash})`; // Display the dev-type and serial
                         deviceSelect.appendChild(option);
                     });
 
                     deviceSelect.focus();
-	
-                    //deviceSelect.size = data.programmers.length + 1;
                 }
                 // Call this to check if no device is selected initially
                 checkDeviceSelection();
@@ -55,14 +53,15 @@ document.addEventListener("DOMContentLoaded", function() {
             });
     });
 
-    // Update hidden input with selected device serial
+    // Update hidden input with selected device serial and flash
     document.getElementById('device-select').addEventListener('change', function() {
         var serial = this.value;
-	var flash = this.flash;
+        var flash = this.options[this.selectedIndex].dataset.flash;  // Get flash from data attribute
         document.getElementById('serial').value = serial;
         document.getElementById('flash').value = flash;
 
-        // Disable the upload button if no serial is selected
+        // Update hidden fields and check device selection
+        updateHiddenFields();
         checkDeviceSelection();
     });
 
@@ -85,10 +84,20 @@ document.addEventListener("DOMContentLoaded", function() {
         }
     });
 
+    function updateHiddenFields() {
+        var serial = deviceSelect.value;
+        var flash = deviceSelect.options[deviceSelect.selectedIndex].dataset.flash;
+        var filename = fileNameInput.value;
 
-    // Handle the form submission via AJAX to prevent page reload
+        document.getElementById('serial').value = serial;
+        document.getElementById('flash').value = flash;
+        document.getElementById('filename').value = filename;
+    }
+
     document.getElementById('saveForm').addEventListener('submit', function(event) {
         event.preventDefault(); // Prevent default form submission and page reload
+
+        updateHiddenFields(); // Ensure hidden fields are updated before form submission
 
         var formData = new FormData(this); // Collect form data
 
@@ -96,21 +105,25 @@ document.addEventListener("DOMContentLoaded", function() {
             method: 'POST',
             body: formData
         })
-        .then(response => response.json())
+        .then(response => {
+            if (!response.ok) {
+                throw new Error('Network response was not ok: ' + response.statusText);
+            }
+            return response.json();  // Parse JSON response
+        })
         .then(data => {
             var terminal = document.getElementById('terminal');
             if (data.error) {
                 terminal.innerHTML += "Error: " + data.error + "\n";
             } else {
-                terminal.innerHTML += "File uploaded successfully!\n";
+                terminal.innerHTML += "File saved successfully!\n";
             }
         })
         .catch(error => {
-            alert('Error: ' + error); // Handle any errors during the fetch
+            console.error('Error:', error); // Use console.error to see the full error in the console
+            alert('Error: ' + error.message); // Handle any errors during the fetch
         });
     });
-
-
 
     // Clear terminal output
     document.getElementById('clear-btn').addEventListener('click', function() {

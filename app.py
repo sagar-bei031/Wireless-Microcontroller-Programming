@@ -1,4 +1,4 @@
-from flask import Flask, jsonify, render_template, request, redirect, url_for, flash, session
+from flask import Flask, jsonify, render_template, request, send_file, redirect, url_for, flash, session
 from flask_socketio import SocketIO, emit, join_room
 import os
 import subprocess
@@ -11,6 +11,7 @@ PASSWORD = os.getenv('UPPASS', 'up')  # Define the upload password
 PARSE_SCRIPT_PATH = './search.sh'
 CSV_FILE_PATH = './stlink_programmers.csv'
 FLASH_SCRIPT_PATH = './upload.sh' 
+EXTRACT_SCRIPT_PATH = './extract.sh'  # Ensure this path is correct
 SAVE_FOLDER = 'saved_bins'
 
 socketio = SocketIO(app)
@@ -38,7 +39,7 @@ def extract_page():
 def handle_connect():
     # Assign the user to a room based on their session ID
     room = request.sid
-    session['sid']=room
+    session['sid'] = room
     join_room(room)
     print(f'User connected and joined room: {room}')
 
@@ -70,14 +71,14 @@ def flash_microcontroller(file_path, serial, reset_option, room):
         stdout, stderr = process.communicate()
 
         if stdout:
-            socketio.emit('terminal_output', {'output': stdout})
+            socketio.emit('terminal_output', {'output': stdout}, room=room)
         if stderr:
-            socketio.emit('terminal_output', {'output': f'Error: {stderr}'})
+            socketio.emit('terminal_output', {'output': f'Error: {stderr}'}, room=room)
 
         if process.returncode == 0:
-            socketio.emit('terminal_output', {'output': 'Microcontroller successfully flashed!'})
+            socketio.emit('terminal_output', {'output': 'Microcontroller successfully flashed!'}, room=room)
         else:
-            socketio.emit('terminal_output', {'output': 'Flashing failed. Check logs.'})
+            socketio.emit('terminal_output', {'output': 'Flashing failed. Check logs.'}, room=room)
     except Exception as e:
         socketio.emit('terminal_output', {'output': f'An error occurred: {str(e)}'}, room=room)
 
@@ -105,7 +106,6 @@ def search():
         return jsonify({"error": "Error reading the CSV file", "details": str(e)}), 500
 
     return jsonify({"programmers": programmers})
-
 
 @app.route('/save-bin', methods=['POST'])
 def save_binary():
@@ -138,8 +138,6 @@ def get_saved_files():
     except Exception as e:
         return jsonify({'error': str(e)}), 500
 
-
-
 @app.route('/delete_file/<filename>', methods=['DELETE'])
 def delete_file(filename):
     """API to delete a file by its name."""
@@ -152,7 +150,6 @@ def delete_file(filename):
             return jsonify({'error': str(e)}), 500
     else:
         return jsonify({'error': 'File not found'}), 404
-
 
 @app.route('/rename_file/<filename>', methods=['PUT'])
 def rename_file(filename):
@@ -178,7 +175,6 @@ def rename_file(filename):
     else:
         return jsonify({'error': 'File not found'}), 404
 
-
 @app.route('/download_file/<filename>', methods=['GET'])
 def download_file(filename):
     """Endpoint to serve a file for download."""
@@ -189,48 +185,44 @@ def download_file(filename):
     else:
         return jsonify({'error': 'File not found'}), 404
 
-
-@app.route('/extract', methods=['GET'])
-def extract_file(filename):
-
+@app.route('/extract', methods=['POST'])
+def extract_file():
     serial = request.form.get('serial')
     filename = request.form.get('filename')
+    flash = request.form.get('flash')
     sid = request.form.get('sid')
 
     if not sid:
-        flash('SID not found')
-        return redirect(url_for('index'))
+        return jsonify({'error': 'SID not found'}), 400
 
     if filename == '' or not serial:
-        flash('No file or device selected')
-        return redirect(url_for('index'))
+        return jsonify({'error': 'No file or device selected'}), 400
 
     file_path = os.path.join(SAVE_FOLDER, filename)
 
-    # Start the flashing process and pass the sid for WebSocket messages
-    socketio.start_background_task(extract_binary, file_path, serial, flash, sid)
-    return jsonify({"status": "success"})
+    try:
+        # Start the extraction process and pass the sid for WebSocket messages
+        socketio.start_background_task(extract_binary, file_path, serial, flash, sid)
+        return jsonify({"status": "success"})  # Return JSON success response
+    except Exception as e:
+        return jsonify({"error": str(e)}), 500
 
 def extract_binary(file_path, serial, flash, sid):
-
     try:
         process = subprocess.Popen([EXTRACT_SCRIPT_PATH, file_path, serial, flash], stdout=subprocess.PIPE, stderr=subprocess.PIPE, text=True)
         stdout, stderr = process.communicate()
 
         if stdout:
-            socketio.emit('terminal_output', {'output': stdout})
+            socketio.emit('terminal_output', {'output': stdout}, room=sid)
         if stderr:
-            socketio.emit('terminal_output', {'output': f'Error: {stderr}'})
+            socketio.emit('terminal_output', {'output': f'Error: {stderr}'}, room=sid)
 
         if process.returncode == 0:
-            socketio.emit('terminal_output', {'output': 'Binary successfully extracted!'})
+            socketio.emit('terminal_output', {'output': 'Binary successfully extracted!'}, room=sid)
         else:
-            socketio.emit('terminal_output', {'output': 'Extracting failed. Check logs.'})
+            socketio.emit('terminal_output', {'output': 'Extracting failed. Check logs.'}, room=sid)
     except Exception as e:
-        socketio.emit('terminal_output', {'output': f'An error occurred: {str(e)}'}, room=room)
-    pass
-
-
+        socketio.emit('terminal_output', {'output': f'An error occurred: {str(e)}'}, room=sid)
 
 if __name__ == '__main__':
     socketio.run(app, host='0.0.0.0', port=5000, debug=True)

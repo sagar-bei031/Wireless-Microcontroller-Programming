@@ -22,23 +22,21 @@
             </div>
         </div>
 
+        <form id="saveForm">
+            <!-- File Name Input -->
+            <div class="input-box">
+                <h3>Enter File Name</h3>
+                <input type="text" id="filename" name="filename" placeholder="Enter file name" disabled>
+            </div>
 
-	<form id="saveForm">
-        <!-- File Name Input -->
-        <div class="input-box">
-            <h3>Enter File Name</h3>
-            <input type="text" id="file-name" placeholder="Enter file name" disabled>
-        </div>
+            <!-- Hidden fields -->
+            <input type="hidden" id="serial" name="serial">
+            <input type="hidden" id="sid" name="sid">
+            <input type="hidden" id="flash" name="flash">
 
-    <!-- Hidden field to store the selected serial -->
-    <input type="hidden" id="serial" name="serial">
-    <input type="hidden" id="sid" name="sid">
-    <input type="hidden" id="flash" name="flash">
-
-
-        <!-- Save Button -->
-        <button id="save-btn" class="save-btn" disabled>Save File</button>
-	</form>
+            <!-- Save Button -->
+            <button id="save-btn" class="save-btn" disabled>Save File</button>
+        </form>
 
         <!-- Terminal Output -->
         <div class="terminal-container">
