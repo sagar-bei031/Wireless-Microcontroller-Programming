@@ -14,14 +14,14 @@ serial=""
 dev_type=""
 
 # Run the st-info --probe command and parse the output
-/data/data/com.termux/files/home/sagar/bin/st-info --probe | while IFS= read -r line; do
+st-info --probe | while IFS= read -r line; do
     # Check if the line contains a serial
     if [[ "$line" =~ serial:\ +([A-Fa-f0-9]+) ]]; then
         serial="${BASH_REMATCH[1]}"
     fi
 
     # Check if the line contains a dev-type
-    if [[ "$line" =~ dev-type:\ +([A-Za-z0-9_]+) ]]; then
+    if [[ "$line" =~ descr:\ +([A-Za-z0-9_]+) ]]; then
         dev_type="${BASH_REMATCH[1]}"
 
         # Check if this dev-type has already been seen

@@ -1,0 +1,28 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Save Binary File</title>
+    <link rel="stylesheet" href="/static/css/save_binary.css">
+    <link rel="stylesheet" href="/static/css/header.css">
+</head>
+<body>
+    <!-- Include header -->
+    {% include 'partials/header.html' %}
+
+    <!-- Main content -->
+    <div class="center-box">
+        <h2>Upload Binary File</h2>
+        <form id="binaryForm" enctype="multipart/form-data">
+            <input type="file" id="fileInput" name="binary_file" accept=".bin" required>
+            <br>
+            <button type="submit" id="saveBtn">Save File</button>
+        </form>
+        <div id="statusMessage"></div>
+    </div>
+
+    <script src="/static/js/save_binary.js"></script>
+</body>
+</html>
+

@@ -1,0 +1,42 @@
+/* Header Styles */
+header {
+    position: fixed; /* Change from sticky to fixed */
+    top: 0;
+    background-color: #333;
+    color: #fff;
+    padding: 10px 0;
+    width: 100%; /* Ensure the header spans the full width */
+    z-index: 1000;
+    box-sizing: border-box;
+    margin: 0;
+    left: 0; /* Ensure the header starts at the left edge */
+}
+
+/* Nav tabs container */
+.nav-tabs {
+    display: flex;
+    justify-content: center; /* Center the navigation links */
+    padding: 0;
+    box-sizing: border-box;
+    width: 100%;
+}
+
+/* Navbar links */
+.nav-tabs a {
+    color: #fff;
+    padding: 10px 20px;
+    text-decoration: none;
+    font-weight: bold;
+    text-align: center;
+    flex-grow: 1;
+}
+
+.nav-tabs a:hover {
+    background-color: #555;
+}
+
+/* Active link styling */
+.nav-tabs a.active {
+    background-color: #444;
+}
+

@@ -1,18 +1,16 @@
 /* General body styling */
+/* General body styling */
 body {
     font-family: 'Roboto', sans-serif;
     background: url('/static/images/bg4.jpg') no-repeat center center fixed;
-    background-size: cover; /* Ensures the image fills the screen without stretching */
+    background-size: cover;
     color: #333;
     margin: 0;
     padding: 0;
-    display: flex;
-    justify-content: center;
-    align-items: flex-start; /* Align content to top */
+    display: block; /* Use block layout instead of flex */
     min-height: 100vh;
-    overflow-y: auto; /* Allows scrolling */
+    overflow-y: auto;
 }
-
 /* Content container */
 #content {
     background-color: rgba(255, 255, 255, 0.9);

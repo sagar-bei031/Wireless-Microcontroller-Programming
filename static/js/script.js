@@ -1,5 +1,11 @@
 // Socket.IO for terminal output (if needed)
 var socket = io.connect('http://' + document.domain + ':' + location.port);
+
+// On WebSocket connect, set the sid in the hidden form field
+socket.on('connect', () => {
+    document.getElementById('sid').value = socket.id;
+});
+
 socket.on('terminal_output', function(data) {
     var terminal = document.getElementById('terminal');
     terminal.innerHTML += data.output + "\n";

@@ -1,4 +1,4 @@
-#!/data/data/com.termux/files/usr/bin/bash
+#!/bin/bash
 
 # Check if the correct number of arguments is provided
 if [ "$#" -ne 3 ]; then

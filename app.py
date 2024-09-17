@@ -1,4 +1,4 @@
-from flask import Flask, jsonify, render_template, request, redirect, url_for, flash
+from flask import Flask, jsonify, render_template, request, redirect, url_for, flash, session
 from flask_socketio import SocketIO, emit, join_room
 import os
 import subprocess
@@ -10,7 +10,8 @@ UPLOAD_FOLDER = 'files'  # Directory where uploaded files are stored
 PASSWORD = os.getenv('UPPASS', 'up')  # Define the upload password
 PARSE_SCRIPT_PATH = './search.sh'
 CSV_FILE_PATH = './stlink_programmers.csv'
-FLASH_SCRIPT_PATH = './script.sh'
+FLASH_SCRIPT_PATH = './upload.sh' 
+SAVE_FOLDER = 'saved_bins'
 
 socketio = SocketIO(app)
 
@@ -21,47 +22,53 @@ if not os.path.exists(UPLOAD_FOLDER):
 def index():
     return render_template('index.html')
 
+@app.route('/stm32')
+def stm32():
+    return render_template('stm32.html')
+
+@app.route('/save_binary')
+def save_binary_page():
+    return render_template('save_binary.html')
+
 @socketio.on('connect')
 def handle_connect():
     # Assign the user to a room based on their session ID
     room = request.sid
+    session['sid']=room
     join_room(room)
     print(f'User connected and joined room: {room}')
 
+
 @app.route('/upload', methods=['POST'])
 def upload_file():
-    #password = request.form.get('password')
-    serial = request.form.get('serial')  # Get the selected serial from the dropdown
+    serial = request.form.get('serial')
     reset_option = request.form.get('flashOption')
+    sid = request.form.get('sid')  # Get the sid from the form
 
-    # Check if the password is correct
-    """
-    if password != PASSWORD:
-        flash('Incorrect password! Please try again.')
+    if not sid:
+        flash('SID not found')
         return redirect(url_for('index'))
-    """
-    
+
     if 'file' not in request.files or not serial:
         flash('No file or device selected')
         return redirect(url_for('index'))
-    
+
     file = request.files['file']
-    
     if file.filename == '':
         flash('No selected file')
         return redirect(url_for('index'))
-    
+
     if file:
         file_path = os.path.join(UPLOAD_FOLDER, file.filename)
         file.save(file_path)
         flash(f'File successfully uploaded to {file_path} for device {serial}')
 
-        # Pass the session ID (room) to the background task
-        room = request.sid
-        socketio.start_background_task(flash_microcontroller, file_path, serial, reset_option, room)
+        # Start the flashing process and pass the sid for WebSocket messages
+        socketio.start_background_task(flash_microcontroller, file_path, serial, reset_option, sid)
         return jsonify({"status": "success"})
     else:
         return jsonify({"error": "Flashing failed"}), 400
+
 
 def flash_microcontroller(file_path, serial, reset_option, room):
     """Function to run the shell script and emit real-time output via WebSockets."""
@@ -104,6 +111,29 @@ def search():
         return jsonify({"error": "Error reading the CSV file", "details": str(e)}), 500
 
     return jsonify({"programmers": programmers})
+
+
+@app.route('/save-bin', methods=['POST'])
+def save_binary():
+    if 'binary_file' not in request.files:
+        return jsonify({'error': 'No file part'}), 400
+
+    file = request.files['binary_file']
+
+    if file.filename == '':
+        return jsonify({'error': 'No selected file'}), 400
+
+    # Ensure the file has a .bin extension
+    if not file.filename.endswith('.bin'):
+        return jsonify({'error': 'Invalid file type. Only .bin files are allowed.'}), 400
+
+    # Save the file to the 'files' directory
+    file_path = os.path.join(SAVE_FOLDER, file.filename)
+    try:
+        file.save(file_path)
+        return jsonify({'success': True})
+    except Exception as e:
+        return jsonify({'error': str(e)}), 500
 
 if __name__ == '__main__':
     socketio.run(app, host='0.0.0.0', port=5000, debug=True)
