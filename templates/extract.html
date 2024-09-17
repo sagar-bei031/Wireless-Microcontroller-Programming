@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Extract Binary File</title>
+    <script src="/static/js/socket.io.min.js"></script>
+    <link rel="stylesheet" href="/static/css/header.css">
+    <link rel="stylesheet" href="/static/css/extract.css">
+</head>
+<body>
+    {% include 'partials/header.html' %}
+    <div id="content">
+        <!-- Microcontroller Search and Selection -->
+        <div class="input-box">
+            <h3>Select Microcontroller</h3>
+            <div class="row-box">
+                <button id="search-btn"><i class="fas fa-search"></i> Search</button>
+                <select id="device-select">
+                    <option value="">--Select a Microcontroller--</option>
+                </select>
+            </div>
+        </div>
+
+
+	<form id="saveForm">
+        <!-- File Name Input -->
+        <div class="input-box">
+            <h3>Enter File Name</h3>
+            <input type="text" id="file-name" placeholder="Enter file name" disabled>
+        </div>
+
+    <!-- Hidden field to store the selected serial -->
+    <input type="hidden" id="serial" name="serial">
+    <input type="hidden" id="sid" name="sid">
+    <input type="hidden" id="flash" name="flash">
+
+
+        <!-- Save Button -->
+        <button id="save-btn" class="save-btn" disabled>Save File</button>
+	</form>
+
+        <!-- Terminal Output -->
+        <div class="terminal-container">
+            <div class="terminal-header">
+                <h3>Process Output</h3>
+                <button id="clear-btn" class="clear-btn">Clear Screen</button>
+            </div>
+            <pre id="terminal"></pre>
+        </div>
+    </div>
+    <script src="/static/js/extract.js"></script>
+</body>
+</html>
+

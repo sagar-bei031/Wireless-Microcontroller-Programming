@@ -3,6 +3,7 @@
         <a href="/" {% if request.endpoint == 'index' %}class="active"{% endif %}>Home</a>
         <a href="/stm32" {% if request.endpoint == 'stm32' %}class="active"{% endif %}>STM32</a>
         <a href="/save_binary" {% if request.endpoint == 'save_binary' %}class="active"{% endif %}>Database</a>
+        <a href="/extract" {% if request.endpoint == 'extract' %}class="active"{% endif %}>Extract Bin</a>
     </div>
 </header>
 

@@ -11,7 +11,12 @@ socket.on('terminal_output', function(data) {
     terminal.innerHTML += data.output + "\n";
 });
 
+
 document.addEventListener("DOMContentLoaded", function() {
+    var deviceSelect = document.getElementById('device-select');
+    var fileNameInput = document.getElementById('file-name');
+    var saveButton = document.getElementById('save-btn');
+    var terminal = document.getElementById('terminal');
     // Initial state of the button should be disabled
     checkDeviceSelection();
 
@@ -50,66 +55,44 @@ document.addEventListener("DOMContentLoaded", function() {
             });
     });
 
-
-    // Fetch and populate saved files
-    fetch('/get_saved_files')
-        .then(response => response.json())
-        .then(data => {
-            var fileSelect = document.getElementById('file-select');
-            fileSelect.innerHTML = '<option value="">--Select a Saved File--</option>'; // Reset the dropdown
-
-            if (data.files.length > 0) {
-                data.files.forEach(file => {
-                    var option = document.createElement('option');
-                    option.value = file;  // Set the value to the file name
-                    option.textContent = file;  // Display the file name
-                    fileSelect.appendChild(option);
-                });
-            }
-
-            // Check if a file is selected
-            checkDeviceSelection();
-        })
-        .catch(error => {
-            alert('Error fetching saved files: ' + error);
-        });
-
     // Update hidden input with selected device serial
     document.getElementById('device-select').addEventListener('change', function() {
         var serial = this.value;
+	var flash = this.flash;
         document.getElementById('serial').value = serial;
+        document.getElementById('flash').value = flash;
 
         // Disable the upload button if no serial is selected
         checkDeviceSelection();
     });
 
-    // Check if a file is selected and enable the button
-    document.getElementById('file-select').addEventListener('change', checkDeviceSelection);
-
-    // Function to check if a device and file are selected
+    // Check if a microcontroller is selected and enable text input
     function checkDeviceSelection() {
-        var serial = document.getElementById('device-select').value;
-        var file = document.getElementById('file-select').value;
-        var uploadButton = document.querySelector('.upload-btn');
-
-        if (serial === '' || file === '') {
-            uploadButton.disabled = true;
-            uploadButton.style.backgroundColor = '#666'; // Grey out button
-            uploadButton.style.cursor = 'not-allowed';
+        if (deviceSelect.value !== '') {
+            fileNameInput.disabled = false;
         } else {
-            uploadButton.disabled = false;
-            uploadButton.style.backgroundColor = '#4CAF50'; // Re-enable button
-            uploadButton.style.cursor = 'pointer';
+            fileNameInput.disabled = true;
+            saveButton.disabled = true;
         }
     }
 
+    // Enable save button when a file name is entered
+    fileNameInput.addEventListener('input', function() {
+        if (this.value !== '') {
+            saveButton.disabled = false;
+        } else {
+            saveButton.disabled = true;
+        }
+    });
+
+
     // Handle the form submission via AJAX to prevent page reload
-    document.getElementById('uploadForm').addEventListener('submit', function(event) {
+    document.getElementById('saveForm').addEventListener('submit', function(event) {
         event.preventDefault(); // Prevent default form submission and page reload
 
         var formData = new FormData(this); // Collect form data
 
-        fetch('/upload', {
+        fetch('/extract', {
             method: 'POST',
             body: formData
         })
@@ -127,9 +110,11 @@ document.addEventListener("DOMContentLoaded", function() {
         });
     });
 
-    // Clear terminal screen when clear button is clicked
+
+
+    // Clear terminal output
     document.getElementById('clear-btn').addEventListener('click', function() {
-        document.getElementById('terminal').innerHTML = '';
+        terminal.innerHTML = '';
     });
 });
 

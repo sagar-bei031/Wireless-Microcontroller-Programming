@@ -30,6 +30,10 @@ def stm32():
 def save_binary_page():
     return render_template('save_binary.html')
 
+@app.route('/extract')
+def extract_page():
+    return render_template('extract.html')
+
 @socketio.on('connect')
 def handle_connect():
     # Assign the user to a room based on their session ID
@@ -92,7 +96,8 @@ def search():
             for row in csv_reader:
                 programmers.append({
                     'dev-type': row['dev-type'],
-                    'serial': row['serial']
+                    'serial': row['serial'],
+                    'flash': row['flash']
                 })
     except FileNotFoundError:
         return jsonify({"error": "CSV file not found"}), 500
@@ -183,6 +188,48 @@ def download_file(filename):
         return send_file(file_path, as_attachment=True)
     else:
         return jsonify({'error': 'File not found'}), 404
+
+
+@app.route('/extract', methods=['GET'])
+def extract_file(filename):
+
+    serial = request.form.get('serial')
+    filename = request.form.get('filename')
+    sid = request.form.get('sid')
+
+    if not sid:
+        flash('SID not found')
+        return redirect(url_for('index'))
+
+    if filename == '' or not serial:
+        flash('No file or device selected')
+        return redirect(url_for('index'))
+
+    file_path = os.path.join(SAVE_FOLDER, filename)
+
+    # Start the flashing process and pass the sid for WebSocket messages
+    socketio.start_background_task(extract_binary, file_path, serial, flash, sid)
+    return jsonify({"status": "success"})
+
+def extract_binary(file_path, serial, flash, sid):
+
+    try:
+        process = subprocess.Popen([EXTRACT_SCRIPT_PATH, file_path, serial, flash], stdout=subprocess.PIPE, stderr=subprocess.PIPE, text=True)
+        stdout, stderr = process.communicate()
+
+        if stdout:
+            socketio.emit('terminal_output', {'output': stdout})
+        if stderr:
+            socketio.emit('terminal_output', {'output': f'Error: {stderr}'})
+
+        if process.returncode == 0:
+            socketio.emit('terminal_output', {'output': 'Binary successfully extracted!'})
+        else:
+            socketio.emit('terminal_output', {'output': 'Extracting failed. Check logs.'})
+    except Exception as e:
+        socketio.emit('terminal_output', {'output': f'An error occurred: {str(e)}'}, room=room)
+    pass
+
 
 
 if __name__ == '__main__':

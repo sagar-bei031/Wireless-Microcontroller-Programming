@@ -7,11 +7,12 @@ OUTPUT_FILE="stlink_programmers.csv"
 declare -A dev_type_count
 
 # Write the CSV header
-echo "dev-type,serial" > "$OUTPUT_FILE"
+echo "dev-type,serial,flash" > "$OUTPUT_FILE"
 
-# Variables to hold the current serial and dev-type
+# Variables to hold the current serial, dev-type, and flash size
 serial=""
 dev_type=""
+flash=""
 
 # Run the st-info --probe command and parse the output
 st-info --probe | while IFS= read -r line; do
@@ -20,7 +21,7 @@ st-info --probe | while IFS= read -r line; do
         serial="${BASH_REMATCH[1]}"
     fi
 
-    # Check if the line contains a dev-type
+    # Check if the line contains a dev-type (descr)
     if [[ "$line" =~ descr:\ +([A-Za-z0-9_]+) ]]; then
         dev_type="${BASH_REMATCH[1]}"
 
@@ -35,9 +36,20 @@ st-info --probe | while IFS= read -r line; do
             new_dev_type="$dev_type"
             dev_type_count[$dev_type]=1
         fi
+    fi
 
-        # Write the dev-type and serial to the CSV file
-        echo "$new_dev_type,$serial" >> "$OUTPUT_FILE"
+    # Check if the line contains a flash size
+    if [[ "$line" =~ flash:\ +([0-9]+) ]]; then
+        flash="${BASH_REMATCH[1]}"
+    fi
+
+    # If we have both serial, dev-type, and flash, write them to the CSV file
+    if [[ -n "$serial" && -n "$dev_type" && -n "$flash" ]]; then
+        echo "$new_dev_type,$serial,$flash" >> "$OUTPUT_FILE"
+        # Reset the serial, dev-type, and flash after writing to CSV
+        serial=""
+        dev_type=""
+        flash=""
     fi
 done
 
