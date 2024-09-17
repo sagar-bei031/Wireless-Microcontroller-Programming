@@ -38,37 +38,26 @@ def handle_connect():
     join_room(room)
     print(f'User connected and joined room: {room}')
 
-
 @app.route('/upload', methods=['POST'])
 def upload_file():
     serial = request.form.get('serial')
     reset_option = request.form.get('flashOption')
-    sid = request.form.get('sid')  # Get the sid from the form
+    selected_file = request.form.get('filename')
+    sid = request.form.get('sid')
 
     if not sid:
         flash('SID not found')
         return redirect(url_for('index'))
 
-    if 'file' not in request.files or not serial:
+    if not selected_file or not serial:
         flash('No file or device selected')
         return redirect(url_for('index'))
 
-    file = request.files['file']
-    if file.filename == '':
-        flash('No selected file')
-        return redirect(url_for('index'))
+    file_path = os.path.join(SAVE_FOLDER, selected_file)
 
-    if file:
-        file_path = os.path.join(UPLOAD_FOLDER, file.filename)
-        file.save(file_path)
-        flash(f'File successfully uploaded to {file_path} for device {serial}')
-
-        # Start the flashing process and pass the sid for WebSocket messages
-        socketio.start_background_task(flash_microcontroller, file_path, serial, reset_option, sid)
-        return jsonify({"status": "success"})
-    else:
-        return jsonify({"error": "Flashing failed"}), 400
-
+    # Start the flashing process and pass the sid for WebSocket messages
+    socketio.start_background_task(flash_microcontroller, file_path, serial, reset_option, sid)
+    return jsonify({"status": "success"})
 
 def flash_microcontroller(file_path, serial, reset_option, room):
     """Function to run the shell script and emit real-time output via WebSockets."""

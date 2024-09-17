@@ -27,15 +27,13 @@
     <br>
     <form id="uploadForm">
 
-    <!-- Box for File Upload -->
+    <!-- Dropdown for Saved Files -->
     <div class="input-box">
-        <h3>Upload Binary File</h3>
+        <h3>Select Binary File</h3>
         <div class="row-box">
-            <label for="file" class="btn-file">
-                <i class="fas fa-upload"></i> Browse
-            </label>
-            <input type="file" name="file" id="file" required style="display:none;">
-            <input type="text" id="file-name" readonly placeholder="No file chosen" />
+            <select id="file-select" name="filename">
+                <option value="">--Select a Saved File--</option>
+            </select>
         </div>
     </div>
 
@@ -58,17 +56,16 @@
     <input type="hidden" id="serial" name="serial">
     <input type="hidden" id="sid" name="sid">
 
-
     <!-- Upload File Button -->
     <input type="submit" class="upload-btn" value="Flash file" disabled>
     </form>
 
     <div class="terminal-container">
-    <div class="terminal-header">
-    <h3>Terminal Output</h3>
-    <button id="clear-btn" class="clear-btn">Clear Screen</button>
-</div>
-<pre id="terminal"></pre>
+        <div class="terminal-header">
+            <h3>Terminal Output</h3>
+            <button id="clear-btn" class="clear-btn">Clear Screen</button>
+        </div>
+        <pre id="terminal"></pre>
     </div>
 
 </div>

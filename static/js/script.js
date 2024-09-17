@@ -38,9 +38,9 @@ document.addEventListener("DOMContentLoaded", function() {
                     });
 
                     deviceSelect.focus();
-                    deviceSelect.size = data.programmers.length + 1;
+	
+                    //deviceSelect.size = data.programmers.length + 1;
                 }
-
                 // Call this to check if no device is selected initially
                 checkDeviceSelection();
             })
@@ -49,6 +49,30 @@ document.addEventListener("DOMContentLoaded", function() {
             });
     });
 
+
+    // Fetch and populate saved files
+    fetch('/get_saved_files')
+        .then(response => response.json())
+        .then(data => {
+            var fileSelect = document.getElementById('file-select');
+            fileSelect.innerHTML = '<option value="">--Select a Saved File--</option>'; // Reset the dropdown
+
+            if (data.files.length > 0) {
+                data.files.forEach(file => {
+                    var option = document.createElement('option');
+                    option.value = file;  // Set the value to the file name
+                    option.textContent = file;  // Display the file name
+                    fileSelect.appendChild(option);
+                });
+            }
+
+            // Check if a file is selected
+            checkDeviceSelection();
+        })
+        .catch(error => {
+            alert('Error fetching saved files: ' + error);
+        });
+
     // Update hidden input with selected device serial
     document.getElementById('device-select').addEventListener('change', function() {
         var serial = this.value;
@@ -56,25 +80,25 @@ document.addEventListener("DOMContentLoaded", function() {
 
         // Disable the upload button if no serial is selected
         checkDeviceSelection();
-
-        this.size = 1;
     });
 
-    // Function to check if a device is selected and enable/disable the button
+    // Check if a file is selected and enable the button
+    document.getElementById('file-select').addEventListener('change', checkDeviceSelection);
+
+    // Function to check if a device and file are selected
     function checkDeviceSelection() {
         var serial = document.getElementById('device-select').value;
+        var file = document.getElementById('file-select').value;
         var uploadButton = document.querySelector('.upload-btn');
 
-        if (serial === '') {
+        if (serial === '' || file === '') {
             uploadButton.disabled = true;
             uploadButton.style.backgroundColor = '#666'; // Grey out button
             uploadButton.style.cursor = 'not-allowed';
-            uploadButton.value = 'Flash File';
         } else {
             uploadButton.disabled = false;
             uploadButton.style.backgroundColor = '#4CAF50'; // Re-enable button
             uploadButton.style.cursor = 'pointer';
-            uploadButton.value = 'Flash File';
         }
     }
 
@@ -88,51 +112,19 @@ document.addEventListener("DOMContentLoaded", function() {
             method: 'POST',
             body: formData
         })
-        .then(response => {
-            const contentType = response.headers.get("content-type");
-            if (contentType && contentType.indexOf("application/json") !== -1) {
-                return response.json();
-            } else {
-                return response.text();
-            }
-        })
+        .then(response => response.json())
         .then(data => {
-            // Update the terminal output or handle any response logic
             var terminal = document.getElementById('terminal');
-
-            if (typeof data === 'object') {
-                if (data.error) {
-                    terminal.innerHTML += "Error: " + data.error + "\n";
-                } else {
-                    terminal.innerHTML += "File uploaded successfully!\n";
-                }
+            if (data.error) {
+                terminal.innerHTML += "Error: " + data.error + "\n";
             } else {
-                terminal.innerHTML += data + "\n";
+                terminal.innerHTML += "File uploaded successfully!\n";
             }
         })
         .catch(error => {
             alert('Error: ' + error); // Handle any errors during the fetch
         });
     });
-
-    // Update file name display
-    const fileInput = document.getElementById('file');
-    const fileNameBox = document.getElementById('file-name');
-
-    fileInput.addEventListener('change', function() {
-        if (fileInput.files.length > 0) {
-            fileNameBox.value = fileInput.files[0].name;  // Display the file name
-        } else {
-            fileNameBox.value = 'No file chosen';  // Reset to 'No file chosen'
-        }
-    });
-
-    // Reset file name if browse is canceled
-    fileInput.addEventListener('click', function() {
-        this.value = '';  // Reset file input
-        fileNameBox.value = 'No file chosen';  // Display 'No file chosen'
-    });
-
 
     // Clear terminal screen when clear button is clicked
     document.getElementById('clear-btn').addEventListener('click', function() {
